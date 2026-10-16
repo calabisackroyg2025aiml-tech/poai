@@ -1,0 +1,45 @@
+def unify(x, y, substitution=None):
+    if substitution is None:
+        substitution = {}
+
+    if x == y:
+        return substitution
+
+    if isinstance(x, str) and x.startswith("?"):
+        substitution[x] = y
+        return substitution
+
+    if isinstance(y, str) and y.startswith("?"):
+        substitution[y] = x
+        return substitution
+
+    if isinstance(x, tuple) and isinstance(y, tuple) and len(x) == len(y):
+        for a, b in zip(x, y):
+            substitution = unify(a, b, substitution)
+
+            if substitution is None:
+                return None
+
+        return substitution
+
+    return None
+
+
+def resolve(c1, c2):
+    resolvents = []
+
+    for literal in c1:
+        opposite = literal[1:] if literal.startswith("~") else "~" + literal
+
+        if opposite in c2:
+            resolvent = (set(c1) | set(c2)) - {literal, opposite}
+            resolvents.append(sorted(resolvent))
+
+    return resolvents
+
+
+print("Unification:")
+print(unify(("likes", "?X", "mary"), ("likes", "john", "mary")))
+
+print("Resolution:")
+print(resolve(["~P", "Q"], ["P", "R"]))
