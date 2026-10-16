@@ -1,0 +1,36 @@
+facts = {
+    "a": True,
+    "b": True,
+    "c": False
+}
+
+rules = [
+    ("d", ["a", "b"]),
+    ("e", ["b", "c"]),
+    ("f", ["d", "e"])
+]
+
+
+def backward_chaining(goal, facts, rules, visiting=None):
+    if visiting is None:
+        visiting = set()
+
+    if goal in facts:
+        return facts[goal]
+
+    if goal in visiting:
+        return False
+
+    visiting = visiting | {goal}
+
+    for head, body in rules:
+        if head == goal:
+            if all(backward_chaining(item, facts, rules, visiting) for item in body):
+                return True
+
+    return False
+
+
+goal = input("Enter goal (a, b, c, d, e, f): ").strip()
+
+print("Goal", goal, "can be proved:", backward_chaining(goal, facts, rules))
