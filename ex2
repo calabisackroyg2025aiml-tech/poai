@@ -1,0 +1,35 @@
+class Graph:
+    def __init__(self):
+        self.graph = {}
+
+    def add_edge(self, u, v):
+        self.graph.setdefault(u, []).append(v)
+        self.graph.setdefault(v, []).append(u)
+
+    def dfs(self, start):
+        visited = set()
+        order = []
+
+        def visit(node):
+            visited.add(node)
+            order.append(node)
+
+            for neighbor in self.graph.get(node, []):
+                if neighbor not in visited:
+                    visit(neighbor)
+
+        visit(start)
+        return order
+
+
+g = Graph()
+
+n = int(input("Enter number of edges: "))
+
+for i in range(n):
+    u, v = input("Enter edge: ").split()
+    g.add_edge(u, v)
+
+start = input("Enter starting vertex: ")
+
+print("DFS Traversal:", " ".join(g.dfs(start)))
