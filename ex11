@@ -1,0 +1,66 @@
+def blocks_world(initial, goal):
+    state = [stack[:] for stack in initial]
+    moves = []
+
+    def find_stack(block):
+        for stack in state:
+            if block in stack:
+                return stack
+        return None
+
+    def clear_block(block):
+        stack = find_stack(block)
+        return stack is not None and stack[-1] == block
+
+    for goal_stack in goal:
+        for position, block in enumerate(goal_stack):
+            while not clear_block(block):
+                stack = find_stack(block)
+                top = stack.pop()
+                state.append([top])
+                moves.append(f"Move {top} to the table")
+
+                if not stack:
+                    state.remove(stack)
+
+            if position == 0:
+                stack = find_stack(block)
+
+                if stack != [block]:
+                    stack.remove(block)
+
+                    if not stack:
+                        state.remove(stack)
+
+                    state.append([block])
+                    moves.append(f"Move {block} to the table")
+
+            else:
+                support = goal_stack[position - 1]
+                stack = find_stack(block)
+                support_stack = find_stack(support)
+
+                if stack is not support_stack:
+                    stack.remove(block)
+
+                    if not stack:
+                        state.remove(stack)
+
+                    support_stack.append(block)
+                    moves.append(f"Move {block} onto {support}")
+
+    return moves, state
+
+
+initial = [["A", "B"], ["C"]]
+goal = [["A"], ["C", "B"]]
+
+moves, final_state = blocks_world(initial, goal)
+
+print("Initial state:", initial)
+print("Moves:")
+
+for move in moves:
+    print(move)
+
+print("Final state:", final_state)
