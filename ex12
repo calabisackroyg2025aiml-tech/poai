@@ -1,0 +1,35 @@
+import numpy as np
+import skfuzzy as fuzz
+from skfuzzy import control as ctrl
+
+service = ctrl.Antecedent(np.arange(0, 11, 1), "service")
+food = ctrl.Antecedent(np.arange(0, 11, 1), "food")
+tip = ctrl.Consequent(np.arange(0, 26, 1), "tip")
+
+service["poor"] = fuzz.trimf(service.universe, [0, 0, 5])
+service["good"] = fuzz.trimf(service.universe, [0, 5, 10])
+service["excellent"] = fuzz.trimf(service.universe, [5, 10, 10])
+
+food["poor"] = fuzz.trimf(food.universe, [0, 0, 5])
+food["good"] = fuzz.trimf(food.universe, [0, 5, 10])
+food["excellent"] = fuzz.trimf(food.universe, [5, 10, 10])
+
+tip["low"] = fuzz.trimf(tip.universe, [0, 0, 13])
+tip["medium"] = fuzz.trimf(tip.universe, [0, 13, 25])
+tip["high"] = fuzz.trimf(tip.universe, [13, 25, 25])
+
+rule1 = ctrl.Rule(service["poor"] | food["poor"], tip["low"])
+rule2 = ctrl.Rule(service["good"], tip["medium"])
+rule3 = ctrl.Rule(service["excellent"] & food["excellent"], tip["high"])
+
+system = ctrl.ControlSystem([rule1, rule2, rule3])
+simulation = ctrl.ControlSystemSimulation(system)
+
+simulation.input["service"] = float(input("Enter service rating (0-10): "))
+simulation.input["food"] = float(input("Enter food rating (0-10): "))
+
+simulation.compute()
+
+print("Suggested tip:", round(simulation.output["tip"], 2))
+
+tip.view(sim=simulation)
