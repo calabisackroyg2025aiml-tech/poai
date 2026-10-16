@@ -1,0 +1,28 @@
+facts = {"a", "b"}
+
+rules = [
+    ("d", ["a", "b"]),
+    ("e", ["b", "c"]),
+    ("f", ["d", "e"]),
+    ("c", ["a"])
+]
+
+
+def forward_chaining(facts, rules):
+    inferred = set(facts)
+    changed = True
+
+    while changed:
+        changed = False
+
+        for conclusion, conditions in rules:
+            if all(condition in inferred for condition in conditions):
+                if conclusion not in inferred:
+                    inferred.add(conclusion)
+                    changed = True
+
+    return inferred
+
+
+print("Initial facts:", sorted(facts))
+print("Facts after forward chaining:", sorted(forward_chaining(facts, rules)))
