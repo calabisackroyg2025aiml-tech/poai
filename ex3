@@ -1,0 +1,19 @@
+def minimax(depth, node, maximizing, values, max_depth):
+    if depth == max_depth:
+        return values[node]
+
+    left = minimax(depth + 1, node * 2, not maximizing, values, max_depth)
+    right = minimax(depth + 1, node * 2 + 1, not maximizing, values, max_depth)
+
+    if maximizing:
+        return max(left, right)
+
+    return min(left, right)
+
+
+values = list(map(int, input("Enter 8 leaf values: ").split()))
+
+if len(values) != 8:
+    print("Please enter exactly 8 values.")
+else:
+    print("Optimal value:", minimax(0, 0, True, values, 3))
