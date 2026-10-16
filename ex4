@@ -1,0 +1,68 @@
+import heapq
+
+def a_star(grid, start, goal):
+    rows = len(grid)
+    cols = len(grid[0])
+
+    def heuristic(pos):
+        return abs(pos[0] - goal[0]) + abs(pos[1] - goal[1])
+
+    queue = [(heuristic(start), 0, start)]
+    parent = {start: None}
+    cost = {start: 0}
+
+    while queue:
+        _, current_cost, current = heapq.heappop(queue)
+
+        if current == goal:
+            path = []
+
+            while current is not None:
+                path.append(current)
+                current = parent[current]
+
+            return path[::-1]
+
+        for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+            nxt = (current[0] + dr, current[1] + dc)
+            r, c = nxt
+
+            if not (0 <= r < rows and 0 <= c < cols):
+                continue
+
+            if grid[r][c] == 1:
+                continue
+
+            new_cost = cost[current] + 1
+
+            if nxt not in cost or new_cost < cost[nxt]:
+                cost[nxt] = new_cost
+                parent[nxt] = current
+                priority = new_cost + heuristic(nxt)
+                heapq.heappush(queue, (priority, new_cost, nxt))
+
+    return None
+
+
+rows = int(input("Enter number of rows: "))
+cols = int(input("Enter number of columns: "))
+
+grid = []
+
+print("Enter 0 for free cells and 1 for blocked cells:")
+
+for i in range(rows):
+    grid.append(list(map(int, input().split())))
+
+start = tuple(map(int, input("Enter start row and column: ").split()))
+goal = tuple(map(int, input("Enter goal row and column: ").split()))
+
+if grid[start[0]][start[1]] == 1 or grid[goal[0]][goal[1]] == 1:
+    print("Start or goal is blocked.")
+else:
+    path = a_star(grid, start, goal)
+
+    if path:
+        print("Path from start to goal:", path)
+    else:
+        print("No path found.")
