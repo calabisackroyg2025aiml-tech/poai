@@ -1,0 +1,14 @@
+parent(john, mary).
+parent(john, peter).
+parent(mary, alice).
+parent(peter, david).
+
+male(john).
+male(peter).
+male(david).
+
+female(mary).
+female(alice).
+
+father(X, Y) :- parent(X, Y), male(X).
+mother(X, Y) :- parent(X, Y), female(X).
